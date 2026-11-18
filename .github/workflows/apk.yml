@@ -9,14 +9,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
-      - name: Configurar Bubblewrap
-        run: |
-          mkdir -p ~/.bubblewrap
-          echo "{\"jdkPath\":\"$JAVA_HOME\",\"androidSdkPath\":\"$ANDROID_HOME\"}" > ~/.bubblewrap/config.json
       - name: Crear llave de firma
         run: |
           keytool -genkeypair -keystore android.keystore -alias ventas \
@@ -28,9 +20,10 @@ jobs:
           BUBBLEWRAP_KEYSTORE_PASSWORD: ventas123456
           BUBBLEWRAP_KEY_PASSWORD: ventas123456
         run: |
+          set +o pipefail
           npm install -g @bubblewrap/cli
-          bubblewrap update --skipVersionUpgrade
-          bubblewrap build --skipPwaValidation
+          yes | bubblewrap update --skipVersionUpgrade
+          yes | bubblewrap build --skipPwaValidation
       - uses: actions/upload-artifact@v4
         with:
           name: apk
