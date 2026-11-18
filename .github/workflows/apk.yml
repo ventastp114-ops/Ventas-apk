@@ -21,6 +21,7 @@ jobs:
           BUBBLEWRAP_KEY_PASSWORD: ventas123456
         run: |
           set +o pipefail
+          unset ANDROID_SDK_ROOT
           npm install -g @bubblewrap/cli
           yes | bubblewrap update --skipVersionUpgrade > update.log 2>&1 || true
           yes | bubblewrap build --skipPwaValidation > build.log 2>&1 || true
