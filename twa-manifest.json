@@ -1,37 +1,24 @@
-name: Build APK
-on:
-  workflow_dispatch:
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
-      - name: Configurar Bubblewrap
-        run: |
-          mkdir -p ~/.bubblewrap
-          echo "{\"jdkPath\":\"$JAVA_HOME\",\"androidSdkPath\":\"$ANDROID_HOME\"}" > ~/.bubblewrap/config.json
-      - name: Crear llave de firma
-        run: |
-          keytool -genkeypair -keystore android.keystore -alias ventas \
-            -keyalg RSA -keysize 2048 -validity 10000 \
-            -storepass ventas123456 -keypass ventas123456 \
-            -dname "CN=Ventas, O=Ventas, C=MX"
-      - name: Construir APK
-        env:
-          BUBBLEWRAP_KEYSTORE_PASSWORD: ventas123456
-          BUBBLEWRAP_KEY_PASSWORD: ventas123456
-        run: |
-          npm install -g @bubblewrap/cli
-          bubblewrap update --skipVersionUpgrade
-          bubblewrap build --skipPwaValidation
-      - uses: actions/upload-artifact@v4
-        with:
-          name: apk
-          path: app-release-signed.apk
+{
+  "packageId": "com.ventasprimavera.app",
+  "host": "ventasprimavera.netlify.app",
+  "name": "Seguimiento de ventas",
+  "launcherName": "Ventas",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#2336c9",
+  "navigationColor": "#0b0e2b",
+  "backgroundColor": "#0b0e2b",
+  "startUrl": "/",
+  "iconUrl": "https://ventasprimavera.netlify.app/icon-512.png",
+  "maskableIconUrl": "https://ventasprimavera.netlify.app/icon-512.png",
+  "webManifestUrl": "https://ventasprimavera.netlify.app/manifest.webmanifest",
+  "appVersion": "1.0.0",
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "enableNotifications": false,
+  "signingKey": { "path": "./android.keystore", "alias": "ventas" },
+  "fallbackType": "customtabs",
+  "features": {},
+  "isChromeOSOnly": false,
+  "isMetaQuest": false
+}
