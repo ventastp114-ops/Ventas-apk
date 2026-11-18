@@ -19,7 +19,7 @@
   "appVersion": "1.0.0",
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
-  "minSdkVersion": 21,
+  "minSdkVersion": 24,
   "splashScreenFadeOutDuration": 300,
   "enableNotifications": false,
   "enableSiteSettingsShortcut": true,
