@@ -22,8 +22,12 @@ jobs:
         run: |
           set +o pipefail
           npm install -g @bubblewrap/cli
-          yes | bubblewrap update --skipVersionUpgrade
-          yes | bubblewrap build --skipPwaValidation
+          yes | bubblewrap update --skipVersionUpgrade > update.log 2>&1 || true
+          yes | bubblewrap build --skipPwaValidation > build.log 2>&1 || true
+          echo "=== RESUMEN DEL ERROR ==="
+          grep -n -m1 -A25 "FAILURE:" build.log || true
+          echo "=== FIN RESUMEN ==="
+          ls -la *.apk
       - uses: actions/upload-artifact@v4
         with:
           name: apk
