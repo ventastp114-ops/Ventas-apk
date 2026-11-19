@@ -1,0 +1,9 @@
+{
+  "appId": "com.ventasprimavera.cap",
+  "appName": "Ventas",
+  "webDir": "www",
+  "server": {
+    "url": "https://ventasprimavera.netlify.app",
+    "androidScheme": "https"
+  }
+}
