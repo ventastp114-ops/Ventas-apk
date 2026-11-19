@@ -1,4 +1,4 @@
-name: Build APK
+name: Build APK Capacitor
 on:
   workflow_dispatch:
 jobs:
@@ -9,27 +9,25 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Crear llave de firma
-        run: |
-          keytool -genkeypair -keystore android.keystore -alias ventas \
-            -keyalg RSA -keysize 2048 -validity 10000 \
-            -storepass ventas123456 -keypass ventas123456 \
-            -dname "CN=Ventas, O=Ventas, C=MX"
-      - name: Construir APK
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Preparar proyecto Android
         env:
-          BUBBLEWRAP_KEYSTORE_PASSWORD: ventas123456
-          BUBBLEWRAP_KEY_PASSWORD: ventas123456
+          GS: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: |
-          set +o pipefail
-          unset ANDROID_SDK_ROOT
-          npm install -g @bubblewrap/cli
-          yes | bubblewrap update --skipVersionUpgrade > update.log 2>&1 || true
-          yes | bubblewrap build --skipPwaValidation > build.log 2>&1 || true
-          echo "=== RESUMEN DEL ERROR ==="
-          grep -n -m1 -A25 "FAILURE:" build.log || true
-          echo "=== FIN RESUMEN ==="
-          ls -la *.apk
+          npm init -y
+          npm install @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6 @capacitor/push-notifications@6
+          npx cap add android
+          if [ -n "$GS" ]; then printf '%s' "$GS" > android/app/google-services.json; else echo "AVISO: falta el secreto GOOGLE_SERVICES_JSON; la app saldrá sin notificaciones"; fi
+          npx cap sync android
+      - name: Compilar APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
       - uses: actions/upload-artifact@v4
         with:
-          name: apk
-          path: app-release-signed.apk
+          name: apk-capacitor
+          path: android/app/build/outputs/apk/debug/app-debug.apk
